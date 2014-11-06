@@ -1,5 +1,5 @@
 class Hangman
-	attr_accessor :right_letters, :wrong_letters, :wrong_guesses
+	attr_accessor :right_letters, :wrong_letters
   attr_reader :dictionary, :answer_letters
 
   def initialize
@@ -7,14 +7,13 @@ class Hangman
     @answer_letters = dictionary.pick_word.split("")
     @right_letters = Array.new(answer_letters.size, "_")
     @wrong_letters = []
-    @wrong_guesses = 0
   end
 
   def display
     puts
     puts
     puts "Wrong guesses: #{wrong_letters.join(", ")}"
-    puts "Wrong guesses left: #{(6 - wrong_guesses)}"
+    puts "Wrong guesses left: #{(6 - wrong_letters.size)}"
     puts
     puts
     puts "Word:"
@@ -45,25 +44,25 @@ class Hangman
       return "Good guess!  Keep going!"
   	else
   		wrong_letters << input
-  		wrong_guesses += 1
   		return "Not in this word.  Try again."
   	end
-
   end
+
 
   def won?
   	return answer_letters == right_letters
   end
 
   def lost?
-  	return wrong_guesses == 6
+  	return wrong_letters.size == 6
   end
+
 
   def game_loop
   	begin
   		display
   	  get_input
-  	 end until (won? || lost?)
+  	end until (won? || lost?)
   end
 
 end
@@ -75,7 +74,9 @@ class Dictionary
 
   def initialize
   	File.open("5desk.txt", "r") do |file|
-    	@word_list = file.read.split("\r\n").select {|word| (5..12) === word.length}
+    	@word_list = file.read.split("\r\n")
+    	word_list.select! {|word| (5..12) === word.length}
+    	word_list.reject! {|word| (/[A-Z]/) =~ word}  #cuts proper nouns out of word list
     end
   end
 
@@ -85,11 +86,6 @@ class Dictionary
 
 end
 
-
-
-class Player
-
-end
 
 
 
