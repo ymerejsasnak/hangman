@@ -1,32 +1,53 @@
 class Hangman
-	attr_accessor :wrong_guesses
-  attr_reader :current_word, :dictionary
+	attr_accessor :right_letters, :wrong_letters, :wrong_guesses
+  attr_reader :dictionary, :answer_word
 
   def initialize
   	@dictionary = Dictionary.new
-    @answer_word = dictionary.pick_word.split
-    @right_letters = []
+    @answer_letters = dictionary.pick_word.split("")
+    @right_letters = Array.new(answer_word.length, "_")
     @wrong_letters = []
     @wrong_guesses = 0
   end
 
-  def main_display
+  def display
     puts
     puts
+    puts "Wrong guesses: #{wrong_letters.join(", ")}"
     puts "Wrong guesses left: #{(6 - wrong_guesses)}"
     puts
     puts
     puts "Word:"
     puts
-    display_word
+    puts "#{right_letters.join(" ")}"
     puts
     puts
   end
 
-  def display_word
-    current_word.each {print "_ "}
+
+  def get_input
+  	puts "Guess a letter"
+  	input = gets.chomp
+  	check_input(input)
   end
 
+  def check_input(input)
+  	if (right_letters.include? input && !(wrong_letters.include? input)) 
+
+  end
+
+  def won?
+  end
+
+  def lost?
+  end
+
+  def game_loop
+  	begin
+  		display
+  	  get_input
+  	 end until (won? || lost?)
+  end
 
 end
 
