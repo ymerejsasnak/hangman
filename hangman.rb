@@ -92,3 +92,4 @@ end
 
 
 game = Hangman.new
+game.game_loop
