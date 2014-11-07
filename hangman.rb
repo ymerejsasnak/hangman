@@ -1,5 +1,5 @@
 class Hangman
-	attr_accessor :right_letters, :wrong_letters
+	attr_accessor :right_letters, :wrong_letters, :message
   attr_reader :dictionary, :answer_letters
 
   def initialize
@@ -7,9 +7,11 @@ class Hangman
     @answer_letters = dictionary.pick_word.split("")
     @right_letters = Array.new(answer_letters.size, "_")
     @wrong_letters = []
+    
   end
 
   def display
+    puts
     puts
     puts
     puts "Wrong guesses: #{wrong_letters.join(", ")}"
@@ -20,32 +22,48 @@ class Hangman
     puts
     puts "#{right_letters.join(" ")}"
     puts
+    puts message
+    puts
     puts
   end
 
 
   def get_input
   	puts "Guess a letter"
-  	input = gets.chomp
-  	puts
-  	puts process_input(input)
-  	puts
+  	input = gets.chomp.downcase
+  	@message = process_input(input)
   end
 
   def process_input(input)
-  	if (right_letters.include? input) || (wrong_letters.include? input)
-  		return "Already guessed that, choose another..."
-  	elsif answer_letters.include? input
-      answer_letters.each_with_index do |letter, index|
-      	if input == answer_letters[index]
-      		right_letters[index] = input
-      	end
-      end
-      return "Good guess!  Keep going!"
-  	else
-  		wrong_letters << input
-  		return "Not in this word.  Try again."
-  	end
+    if valid_input?(input)
+     	
+      if (right_letters.include? input) || (wrong_letters.include? input)
+  	 	 return "Already guessed that, choose another..."
+  	  
+      elsif answer_letters.include? input
+        answer_letters.each_with_index do |letter, index|
+        	if input == answer_letters[index]
+        		right_letters[index] = input
+        	end
+        end
+        return "Good guess!"
+  	  
+      else
+    		wrong_letters << input
+    		return "Not in this word."
+    	end
+   
+    else
+      return "Invalid input."
+    end
+  end
+
+  def valid_input?(input)
+    if input.length > 1
+      return false
+    else
+      return /[a-z]/.match(input)
+    end
   end
 
 
@@ -57,12 +75,25 @@ class Hangman
   	return wrong_letters.size == 6
   end
 
+  def game_over_message
+    if won?
+      return "YOU WIN!"
+    elsif lost?
+      return "YOU LOSE!  The word was '#{answer_letters.join}.'"
+    end
+  end
+
 
   def game_loop
-  	begin
+  	
+    begin
   		display
   	  get_input
   	end until (won? || lost?)
+    
+    @message = game_over_message
+    display
+
   end
 
 end
