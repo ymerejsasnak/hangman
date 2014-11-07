@@ -1,6 +1,8 @@
+require 'yaml'
+
 class Hangman
-	attr_accessor :right_letters, :wrong_letters, :message
-  attr_reader :dictionary, :answer_letters
+	attr_accessor :right_letters, :wrong_letters, :message, :answer_letters
+  attr_reader :dictionary
 
   def initialize
   	@dictionary = Dictionary.new
@@ -22,7 +24,8 @@ class Hangman
     puts
     puts "#{right_letters.join(" ")}"
     puts
-    puts message
+    puts
+    puts "** #{message} **"
     puts
     puts
   end
@@ -70,7 +73,7 @@ class Hangman
     if input.length > 1
       return false
     else
-      return /[a-z]/.match(input)
+      return (/[a-z]/).match(input)
     end
   end
 
@@ -107,11 +110,26 @@ class Hangman
 
   def save_game
     Dir.mkdir "savegames" unless Dir.exists? "savegames"
-    save = gets.chomp.downcase
+    puts
+    puts "type name to save as"
+    save_name = gets.chomp.downcase
+    File.open("savegames/#{save_name}.hm", "w") do |file|
+      save_data = [answer_letters, right_letters, wrong_letters]
+      file.write YAML::dump(save_data)
+    end
+    return "game '#{save_name}' saved"
   end
 
   def load_game
-    load = gets.chomp.downcase
+    puts
+    puts "type name to load"
+    load_name = gets.chomp.downcase
+    file = File.open("savegames/#{load_name}.hm", "r")
+    load_data = YAML::load(file.read)
+    @answer_letters = load_data[0]
+    @right_letters = load_data[1]
+    @wrong_lettesr = load_data[2]  
+    return "game '#{load_name}' loaded"
   end
 
 end
