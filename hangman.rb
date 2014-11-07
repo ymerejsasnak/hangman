@@ -7,7 +7,7 @@ class Hangman
     @answer_letters = dictionary.pick_word.split("")
     @right_letters = Array.new(answer_letters.size, "_")
     @wrong_letters = []
-    
+    @message = "Type 'save' at any time to save your game or 'load' to load a saved game."
   end
 
   def display
@@ -35,30 +35,38 @@ class Hangman
   end
 
   def process_input(input)
-    if valid_input?(input)
-     	
-      if (right_letters.include? input) || (wrong_letters.include? input)
-  	 	 return "Already guessed that, choose another..."
-  	  
-      elsif answer_letters.include? input
-        answer_letters.each_with_index do |letter, index|
-        	if input == answer_letters[index]
-        		right_letters[index] = input
-        	end
-        end
-        return "Good guess!"
-  	  
-      else
-    		wrong_letters << input
-    		return "Not in this word."
-    	end
-   
+    
+    if input == "save"
+      return save_game
+    elsif input == "load"
+      return load_game
     else
-      return "Invalid input."
+      #otherwise process as a potential letter guess
+      if valid_guess?(input)
+       	
+        if (right_letters.include? input) || (wrong_letters.include? input)
+      		return "Already guessed that, choose another..."
+  	  
+        elsif answer_letters.include? input
+          answer_letters.each_with_index do |letter, index|
+          	if input == answer_letters[index]
+          		right_letters[index] = input
+          	end
+          end
+          return "Good guess!"
+  	  
+        else
+      		wrong_letters << input
+    	  	return "Not in this word."
+      	end
+   
+      else
+        return "Invalid input."
+      end
     end
   end
 
-  def valid_input?(input)
+  def valid_guess?(input)
     if input.length > 1
       return false
     else
@@ -96,6 +104,16 @@ class Hangman
 
   end
 
+
+  def save_game
+    Dir.mkdir "savegames" unless Dir.exists? "savegames"
+    save = gets.chomp.downcase
+  end
+
+  def load_game
+    load = gets.chomp.downcase
+  end
+
 end
 
 
@@ -116,8 +134,6 @@ class Dictionary
   end
 
 end
-
-
 
 
 
