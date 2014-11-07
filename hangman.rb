@@ -126,9 +126,10 @@ class Hangman
     load_name = gets.chomp.downcase
     file = File.open("savegames/#{load_name}.hm", "r")
     load_data = YAML::load(file.read)
+    file.close
     @answer_letters = load_data[0]
     @right_letters = load_data[1]
-    @wrong_lettesr = load_data[2]  
+    @wrong_letters = load_data[2]  
     return "game '#{load_name}' loaded"
   end
 
